@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=hyperparameter          # create a short name for your job
+#SBATCH --partition=gpu
+#SBATCH --nodes=1                # node count
+#SBATCH --ntasks-per-node=8
+#SBATCH --gres=gpu:1        # number of gpus per node
+#SBATCH --time=3-00:00:00          # total run time limit (HH:MM:SS)
+#SBATCH --output=attr_t5_cv.txt        # Standard output log
+
+#SBATCH --error=attr_t5_cv.txt        # Standard error log
+
+
+
+module load singularity
+singularity run --nv /home/navya/gpu/transformers-pytorch-gpu.sif python3 cv_attr_300.py 

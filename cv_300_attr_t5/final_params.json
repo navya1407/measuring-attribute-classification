@@ -1,0 +1,1 @@
+{"dropout_rate": 0.02154867810249722, "input_seq_length": 256, "learning_rate": 0.00022763326997820923, "num_train_epochs": 24, "output_seq_length": 14, "per_device_eval_batch_size": 16, "per_device_train_batch_size": 16, "weight_decay": 0.0013437781293502878}
