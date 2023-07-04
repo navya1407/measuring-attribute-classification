@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=ent_attr  # create a short name for y:wqour job
+#SBATCH --partition=gpu
+#SBATCH --nodes=1                # node count
+#SBATCH --ntasks-per-node=8
+#SBATCH --gres=gpu:1        # number of gpus per node
+#SBATCH --time=3-00:00:00          # total run time limit (HH:MM:SS)
+#SBATCH --output=out_ent.txt        # Standard output log
+#SBATCH --error=err_ent.txt        # Standard error log
+
+
+
+module load singularity
+singularity run --nv /home/navya/gpu/transformers-pytorch-gpu.sif python3 hyper_ent_attr.py                                                                                    
