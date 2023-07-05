@@ -118,3 +118,112 @@ print(f"Evaluation loss : {eval_result['eval_loss']}")
 model.save_pretrained('/home/navya/gpu/ent_attr/train_ent_attr/t5_ent_attr_model')
 #save tokenizer
 tokenizer.save_pretrained('/home/navya/gpu/ent_attr/train_ent_attr/t5_ent_attr_tokenizer')
+#100 samples with 25 of each seq len
+with open('/content/drive/MyDrive/MTP Project/t5_data/test_data_100_seperate.json' ) as f:
+  rule_test=json.load(f)
+test_json=[]
+for i in rule_test:
+  d={}
+  inp=i['sentence']+" "+ f"What are the entity and attribute related with quantity {i['quantity']}?"
+
+  outt=i['entity']+' <sep> '+i['attribute']
+  d['input']=inp
+  d['output']=outt
+  d['entity']=i['entity']
+  d['quantity']=i['quantity']
+  d['sen']=i['sentence']
+  test_json.append(d)
+len(test_json)
+#store result as list of dictionaries with keys as sentence,entity,attribute
+res=[]
+for i in range(len(test_json)):
+
+  d=test_json[i]
+
+  input=d['input']
+
+  tokenized_inputs= tokenizer(input, max_length=256, truncation=True,return_tensors='pt')
+  tokenized_inputs=tokenized_inputs.to('cuda')
+  output_sequence = model.generate(**tokenized_inputs
+                                 )
+
+# decode the output sequence into text using the tokenizer
+  #d=rule_test[i]
+  u={}
+  print(d['sen'])
+  print("------------------------------Rule based result-------------------------------")
+  print(f" Entity : {d['entity']}")
+  print(f" Quantity : {d['quantity']} ")
+  print(f" Attribute : {d['output']} ")
+  print("-------------------------------- T5 Result------------------------------------")
+  output_text = tokenizer.decode(output_sequence[0], skip_special_tokens=True)
+  print(f" Attribute : {output_text}")
+  print('\n\n')
+  u['sentence']=d['sen']
+  #seperate entity and attribute in predicted text
+  if('<sep>' in output_text):
+   ent=output_text.split('<sep>')[0].strip()
+   attr=output_text.split('<sep>')[1].strip()
+  else:
+    ent=output_text
+    attr=''
+
+  u['attribute']=attr
+  u['entity']=ent
+  res.append(u)
+  import json
+with open ('/content/drive/MyDrive/MTP Project/out_ent_attr/ent_attr/test_25samples_prediction.json','w') as f:
+  json.dump(res,f)
+#test data according to dataset distribution
+with open('/content/drive/MyDrive/MTP Project/t5_data/new_test_data_100.json' ) as f:
+  rule_test=json.load(f)
+len(rule_test)
+test_json=[]
+for i in rule_test:
+  d={}
+  inp=i['sentence']+" "+ f"What are the entity and attribute related with  quantity {i['quantity']}?"
+
+  outt=i['entity'] + ' <sep> '+i['measuring attribute']
+  d['input']=inp
+  d['output']=outt
+  d['entity']=i['entity']
+  d['quantity']=i['quantity']
+  d['sen']=i
+  test_json.append(d)
+res=[]
+for i in range(len(test_json)):
+
+  d=test_json[i]
+
+  input=d['input']
+
+  tokenized_inputs= tokenizer(input, max_length=256, truncation=True,return_tensors='pt')
+  tokenized_inputs=tokenized_inputs.to('cuda')
+  output_sequence = model.generate(**tokenized_inputs
+                                 )
+
+# decode the output sequence into text using the tokenizer
+  #d=rule_test[i]
+  u={}
+  print(d['sen'])
+  print("------------------------------Rule based result-------------------------------")
+  print(f" Entity : {d['entity']}")
+  print(f" Quantity : {d['quantity']} ")
+  print(f" Attribute : {d['output']} ")
+  print("-------------------------------- T5 Result------------------------------------")
+  output_text = tokenizer.decode(output_sequence[0], skip_special_tokens=True)
+  print(f" Attribute : {output_text}")
+  print('\n\n')
+  u['sentence']=d['sen']
+  if('<sep>' in output_text):
+   ent=output_text.split('<sep>')[0].strip()
+   attr=output_text.split('<sep>')[1].strip()
+  else:
+    ent=output_text
+    attr=''
+  u['attribute']=attr
+  u['entity']=ent
+  res.append(u)
+  import json
+with open ('/content/drive/MyDrive/MTP Project/out_ent_attr/ent_attr/test_data_distribution.json','w') as f:
+  json.dump(res,f)
